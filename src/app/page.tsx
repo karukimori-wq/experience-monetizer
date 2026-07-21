@@ -12,6 +12,7 @@ export default function Home() {
         <a href="/diagnosis">診断</a>
         <a href="/jobs">副業を探す</a>
         <a href="/dashboard">マイページ</a>
+        <a href="/settings">設定</a>
       </div>
     </nav>
     <section className="hero"><span className="eyebrow">経験マネタイザー β</span><h1>あなたの普通の経験を、<br />副業の可能性に変える。</h1><p>仕事、趣味、人生経験を選ぶだけ。250種類の副業から、あなたの経験が活きる選択肢を見つけます。</p><div className="hero-actions"><a href="/diagnosis" className="primary-button link-button">無料で診断を始める</a><a href="/jobs" className="secondary-button link-button">250件から探す</a></div><div className="hero-meta"><span>AI不使用</span><span>約3分</span><span>完全選択式</span></div></section>
