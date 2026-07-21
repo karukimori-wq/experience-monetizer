@@ -1,0 +1,5 @@
+import {JobCatalogItem} from './jobCatalog';
+export type DetailSkill={name:string;required:number;weight:number};
+const skillMap:Record<string,string>={Excel:'Excel',業務改善:'問題解決',改善:'問題解決',整理:'問題解決',文章作成:'文章作成',ブログ:'文章作成',SEO:'文章作成',製造:'業界専門知識',技術:'業界専門知識',品質管理:'業界専門知識',専門知識:'業界専門知識',教育:'教える力',オンライン:'教える力',経験:'業界専門知識',人生経験:'業界専門知識',SNS:'文章作成',マーケティング:'問題解決',企画:'問題解決',デザイン:'制作スキル',Canva:'制作スキル',写真:'制作スキル',動画:'制作スキル',販売:'顧客対応',営業:'顧客対応',事務:'実務遂行',PC:'実務遂行',地域:'情報収集',リサーチ:'情報収集'};
+export function getCatalogSkills(job:JobCatalogItem):DetailSkill[]{const names=job.keywords.map(k=>skillMap[k]??k).filter((v,i,a)=>a.indexOf(v)===i).slice(0,5);if(!names.length)names.push('実務遂行');const weight=Math.floor(100/names.length);return names.map((name,i)=>({name,required:Math.min(90,45+job.difficulty*8+(i===0?5:0)),weight:i===names.length-1?100-weight*(names.length-1):weight}))}
+export function getJobDescription(job:JobCatalogItem){return `${job.keywords.slice(0,2).join('・')}などの経験や関心を活かし、${job.revenueModel}で収益化を目指す副業です。週${job.weeklyHours}時間程度から始める想定です。`}
