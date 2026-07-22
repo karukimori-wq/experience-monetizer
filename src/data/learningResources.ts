@@ -17,4 +17,6 @@ export const learningResources:LearningResource[]=[
 {skill:'リサーチ',title:'リサーチ効率化ツール',description:'情報収集と整理を効率化し、記事作成や商品企画の時間を短縮します。',kind:'ツール',cta:'ツール候補を見る',affiliateKey:'research-tool'}
 ];
 
+const envKey=(affiliateKey:string)=>`NEXT_PUBLIC_AFFILIATE_${affiliateKey.replace(/-/g,'_').toUpperCase()}`;
+export function getAffiliateUrl(affiliateKey:string){if(typeof process==='undefined')return'';return process.env[envKey(affiliateKey)]??''}
 export function getLearningResources(skills:string[]){const selected:LearningResource[]=[];for(const skill of skills){const exact=learningResources.find(r=>r.skill===skill);if(exact&&!selected.some(r=>r.affiliateKey===exact.affiliateKey))selected.push(exact)}if(!selected.length)selected.push(learningResources[9],learningResources[10]);return selected.slice(0,3)}
