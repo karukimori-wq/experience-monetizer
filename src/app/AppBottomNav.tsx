@@ -4,6 +4,7 @@ import {usePathname} from 'next/navigation';
 
 const items=[
   {href:'/',label:'ホーム',icon:'⌂'},
+  {href:'/skills',label:'スキル',icon:'✦'},
   {href:'/jobs',label:'探す',icon:'⌕'},
   {href:'/compare',label:'比較',icon:'◇'},
   {href:'/dashboard',label:'マイページ',icon:'○'},
