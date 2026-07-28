@@ -18,6 +18,7 @@ export default function StartPlanPage(){
  const [done,setDone]=useState<number[]>([]);
  const [quality,setQuality]=useState<QualityState>({});
  const [outputs,setOutputs]=useState<OutputState>({});
+ const [showAll,setShowAll]=useState(false);
 
  useEffect(()=>{
   const id=localStorage.getItem(JOB)||'';
@@ -71,21 +72,21 @@ export default function StartPlanPage(){
 
  return <main className="results-shell">
   <header className="catalog-header start-plan-header">
-   <div><span className="eyebrow">FIRST ACTION GUIDE</span><h1>{job.name}</h1><p>この副業を始めるために、次に何をすればよいかを順番に案内します。各アクションには、具体的な手順・完成するもの・完了条件があります。</p></div>
+   <div><span className="eyebrow">FIRST ACTION GUIDE</span><h1>{job.name}</h1><p>先のことを一度に考えず、まずは今表示されている1つだけ進めましょう。</p></div>
    <a href={`/jobs/${job.id}`} className="nav-cta">副業詳細を見る →</a>
   </header>
 
   <section className="dashboard-card roadmap-principles">
-   <div><strong>① 今やること</strong><span>迷わず手を動かせる具体的な行動を示す</span></div>
-   <div><strong>② 完成するもの</strong><span>各アクションで何が残るかを明確にする</span></div>
-   <div><strong>③ 記録して次へ</strong><span>成果物やURLを残し、完了条件を確認する</span></div>
+   <div><strong>① 1つだけやる</strong><span>今のアクション以外は考えなくて大丈夫</span></div>
+   <div><strong>② できたものを残す</strong><span>URL・文章・決めた内容をその場で記録</span></div>
+   <div><strong>③ 条件を確認する</strong><span>完了したら次の1つが自動で表示される</span></div>
   </section>
 
   <section className="dashboard-card plan-progress"><div><div><span className="eyebrow">PROGRESS</span><p>{completed} / {steps.length} アクション完了</p></div><strong>{percent}%</strong></div><div className="progress-track"><div style={{width:`${percent}%`}}/></div></section>
 
   {nextStep&&<section className="dashboard-card plan-next-action">
    <div>
-    <span className="eyebrow">今やること · ACTION {nextIndex+1}</span>
+    <span className="eyebrow">今日の一歩 · ACTION {nextIndex+1}</span>
     <h2>{nextStep.title}</h2>
     <p>{nextStep.description}</p>
     {nextStep.estimatedTime&&<p><strong>目安時間：</strong>{nextStep.estimatedTime}</p>}
@@ -94,18 +95,21 @@ export default function StartPlanPage(){
     <div className="roadmap-outcome"><small>このアクションで完成するもの</small><strong>{nextStep.outcome}</strong></div>
     {nextStep.url&&<a className="roadmap-link" href={nextStep.url} target="_blank" rel="noopener noreferrer"><span>{nextStep.linkLabel||'公式サイトを開く'}</span><small>今の作業に必要なページを開く</small></a>}
     <OutputInput index={nextIndex}/>
+    <div className="quality-gate"><div><span className="eyebrow">DONE CHECK</span><strong>{passed(nextIndex)?'完了条件を満たしました':`${nextStep.qualityChecks.length}項目を確認`}</strong></div>{nextStep.qualityChecks.map((check,checkIndex)=>{const checks=quality[String(nextIndex)]??nextStep.qualityChecks.map(()=>false);return <label key={check} className={checks[checkIndex]?'checked':''}><input type="checkbox" checked={Boolean(checks[checkIndex])} onChange={()=>toggleQuality(nextIndex,checkIndex)}/><span>{check}</span></label>})}</div>
    </div>
-   <div className="next-quality-status"><span>{passed(nextIndex)?'完了条件を満たしました':'完了条件を確認してください'}</span><button className="primary-button" disabled={!passed(nextIndex)} onClick={()=>toggle(nextIndex)}>完了して次へ ✓</button></div>
+   <div className="next-quality-status"><span>{passed(nextIndex)?'完了条件を満たしました':'終わった項目にチェックしてください'}</span><button className="primary-button" disabled={!passed(nextIndex)} onClick={()=>toggle(nextIndex)}>完了して次の一歩へ ✓</button></div>
   </section>}
 
-  <section className="plan-list">
+  <section className="dashboard-card"><button type="button" className="plan-inline-complete" onClick={()=>setShowAll(value=>!value)}>{showAll?'全体の流れを閉じる':'この先の流れも確認する'}</button></section>
+
+  {showAll&&<section className="plan-list">
    {steps.map((step,index)=>{
     const isDone=done.includes(index); const isNext=index===nextIndex;
     const checks=quality[String(index)]??step.qualityChecks.map(()=>false);
     return <article className={`${isDone?'plan-step done':'plan-step'}${isNext?' current':''}`} key={`${job.id}-${index}-${step.title}`}>
      <button className="plan-check" onClick={()=>toggle(index)} aria-label={`ACTION ${index+1}を${isDone?'未完了に戻す':'完了にする'}`}>{isDone?'✓':index+1}</button>
      <div className="roadmap-step-content">
-      <span className="eyebrow">{isNext?'NEXT · ':''}ACTION {index+1} · {step.stage}</span>
+      <span className="eyebrow">{isNext?'NOW · ':''}ACTION {index+1} · {step.stage}</span>
       <h2>{step.title}</h2><p>{step.description}</p>
       {step.estimatedTime&&<p><strong>目安時間：</strong>{step.estimatedTime}</p>}
       {step.purpose&&<div className="roadmap-outcome"><small>目的</small><strong>{step.purpose}</strong></div>}
@@ -115,11 +119,10 @@ export default function StartPlanPage(){
       <OutputInput index={index}/>
       <div className="quality-gate"><div><span className="eyebrow">DONE CHECK</span><strong>{passed(index)?'完了条件を満たしました':`${step.qualityChecks.length}項目を確認`}</strong></div>{step.qualityChecks.map((check,checkIndex)=><label key={check} className={checks[checkIndex]?'checked':''}><input type="checkbox" checked={Boolean(checks[checkIndex])} onChange={()=>toggleQuality(index,checkIndex)}/><span>{check}</span></label>)}</div>
       {step.resource&&<aside className="roadmap-resource"><div><span className="eyebrow">OPTIONAL SUPPORT · {step.resource.kind}</span><strong>{step.resource.title}</strong><p>{step.resource.description}</p><small>必要な場合だけ利用する補助サービスです。</small></div><a href={step.resource.url} target="_blank" rel="sponsored noopener noreferrer" onClick={()=>trackAffiliateClick(step.resource!.affiliateKey,job.id)}>{step.resource.cta} →</a></aside>}
-      {!isDone&&<button className="plan-inline-complete" disabled={!passed(index)} onClick={()=>toggle(index)}>{passed(index)?'完了して次へ進む':'完了条件を確認してください'}</button>}
      </div>
     </article>;
    })}
-  </section>
+  </section>}
 
   {percent===100&&<section className="deepen-card"><div><span className="eyebrow">FIRST ACTIONS COMPLETED</span><h2>最初の実行ルートを完了しました。</h2><p>ここまでに作った成果物や公開・応募の結果を記録すると、次の改善行動につなげられます。</p></div><a href="/activity" className="primary-button link-button">行動・実績を記録する</a></section>}
  </main>;
