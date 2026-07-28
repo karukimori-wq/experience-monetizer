@@ -36,23 +36,24 @@ export default function DiagnosisPage() {
       return;
     }
     setStep(value => value + 1);
+    window.scrollTo({top:0, behavior:'smooth'});
   }
 
-  return <main className="diagnosis-shell">
+  return <main className="diagnosis-shell" style={{minHeight:'100dvh', paddingBottom:'calc(24px + env(safe-area-inset-bottom))'}}>
     <header className="diagnosis-header">
       <a href="/" className="brand">経験マネタイザー</a>
       <span>{step + 1} / {quickQuestions.length}</span>
     </header>
     <div className="progress-track"><div style={{width:`${progress}%`}} /></div>
-    <section className="question-panel">
+    <section className="question-panel" style={{marginBottom:0}}>
       <div className="question-meta"><span>QUICK DIAGNOSIS</span><span>{selectionLabel}</span></div>
       <h1>{question.title}</h1>
       {question.subtitle && <p>{question.subtitle}</p>}
       <div className="option-grid">
         {question.options.map(option => <button key={option} className={`option-button ${selected.includes(option) ? 'selected' : ''}`} onClick={() => toggle(option)}>{option}<span>{selected.includes(option) ? '✓' : '+'}</span></button>)}
       </div>
-      <div className="diagnosis-actions">
-        <button className="secondary-button" disabled={step===0} onClick={() => setStep(v => v-1)}>戻る</button>
+      <div className="diagnosis-actions" style={{position:'sticky', bottom:0, zIndex:20, marginTop:36, padding:'16px 0 calc(16px + env(safe-area-inset-bottom))', background:'linear-gradient(180deg, rgba(251,252,251,0) 0%, rgba(251,252,251,.96) 24%, #fbfcfb 100%)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)'}}>
+        <button className="secondary-button" disabled={step===0} onClick={() => {setStep(v => v-1); window.scrollTo({top:0, behavior:'smooth'});}}>戻る</button>
         <button className="primary-button" disabled={!canContinue} onClick={next}>{step===quickQuestions.length-1 ? '結果を見る' : '次へ'}</button>
       </div>
     </section>
